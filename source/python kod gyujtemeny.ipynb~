@@ -19,10 +19,6 @@
     "<a href=\"#clean\">Data cleaning</a><br>\n",
     "<a href=\"#miss\">Missing data imputation</a><br>\n",
     "<a href=\"#transform\">Data transformation, dummies </a> <br>\n",
-    "<ul>\n",
-    "    <li><a href='#scale'>Feature scaleing</a></li>\n",
-    "    <li><a href='#encode'>Feature encode</a></li>\n",
-    "</ul>\n",
     "<a href=\"#stat\">Statistics</a><br>\n",
     "<a href='#matplot'>Matplotlib</a><br>\n",
     "<div style=\"margin-left: 20pt;\">\n",
@@ -401,15 +397,9 @@
     "\n",
     "[random.choice([*abc]) for i in range(1000)]\n",
     "\n",
-    "#bootstrap sampling: getting samples in multiple rounds\n",
+    "#bootstrap sampling\n",
     "[random.sample(list, 5) for i in range(10)] #generating 10 group of 5 samples \n",
-    "np.mean([np.mean(random.sample(list, 5)) for i in range(10)]) # prectical use in population mean calculation\n",
-    "\n",
-    "df.sample(n=, replace= True) # random sampling with/without replacement\n",
-    "\n",
-    "# stratified split or random selection: keep cohort proportions\n",
-    "from sklearn.model_selection import train_test_split\n",
-    "X_train, X_test = train_test_split(X, test_size = 0.5, random_state = 42, stratify= None)"
+    "np.mean([np.mean(random.sample(list, 5)) for i in range(10)]) # prectical use in population mean calculation"
    ]
   },
   {
@@ -583,8 +573,6 @@
    "outputs": [],
    "source": [
     "#np tricks\n",
-    "\n",
-    "np.split(s, )\n",
     "\n",
     "# rolling sum , even from df.columns\n",
     "l = [450, 628, 488, 210, 287, 791, 508, 639, 397, 943]\n",
@@ -772,6 +760,7 @@
    "source": [
     "data.describe(include='all', percentile=[.10,.9]).transpose() # a soveges oszloprol is ad infot, szabadon definialt percetile hatarok\n",
     "df.count()\n",
+    "df.sample(3)\n",
     "\n",
     "df=df.iloc[::-1]  #reverse order\n",
     "\n",
@@ -1319,70 +1308,10 @@
    "source": [
     "#data transformation\n",
     "#bin the daily data - works only with datetime index\n",
-    "bike = read.resample('d').sum()\n"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "<span id='scale'>Feature scaling</span><a href='#upp' style='margin-left: 20pt;'>up</a>"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "#feature scaling mindig a felosztas utan kell, mert a kevesebb adat jobb scale-t ad.\n",
-    "##categorical valtozokat is erdemes scalelni a jobb predikcio miatt. igy azonban informaciot veszthet a modell.\n",
-    "##feature scaling noveli a sebesseget, meg akkor is ha nem euclideszi tavolsagon alapul az algoritmus\n",
-    "##classification nem kell an indep var scalelni, de regressional igen\n",
-    "## szamos algoritum tartamazza automatikusan a feature scaling-et, nem kell kulon alkalmazni\n",
-    "# az mintak a sorok a feature az oszlop. ha mashogy van df.T - transpose\n",
-    "from sklearn.preprocessing import StandardScaler\n",
-    "sc_x = StandardScaler()\n",
-    "X_train = sc_x.fit_transform(X_train) # az elso lepesben fit-elni kell, ha ujra hasznaljuk mar nem kell\n",
-    "X_test = sc_x.transform(X_test)\n",
-    "\n",
-    "from sklearn.preprocessing import MinMaxScaler # sensitive for outliers\n",
-    "mscaler = MinMaxScaler()\n",
-    "Xm_train = mscaler.fit_transform(Xtrain)\n",
-    "Xm_test = mscaler.transform(Xtest)\n",
-    "\n",
-    "from sklearn.preprocessing import Normalizer\n",
-    "norm = Normalizer()\n",
-    "Xn_train = norm.fit_transform(Xtrain)\n",
-    "Xn_test = norm.transform(Xtest)\n",
-    "\n",
-    "from sklearn.preprocessing import RobustScaler # use q25-q75 minmax\n",
-    "...\n",
-    "\n",
-    "# real value retrival after prediction\n",
-    "y_pred = sc_y.inverse_trainsform(ypred)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "<span id='endoce'>Feature encoding</span><a href='#upp' style='margin-left:20px;'>up</a>"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "#adat transformacio szoveg kategoria ertekke \n",
-    "#ordinal categorical\n",
-    "df = pd.factorize(df['oszlop'])[0] \n",
-    "from sklearn.preprocessing import OrdinalEncoder\n",
-    "\n",
-    "# nominal categorical\n",
-    "df = pd.get_dummies(df, columns=['',''])\n",
+    "bike = read.resample('d').sum()\n",
+    "#adat transformacio szoveg kategoria ertekke\n",
+    "df = pd.get_dummies(df, columns=['','']) \n",
+    "df = pd.factorize(df['oszlop'])[0]\n",
     "from sklearn.preprocessing import LabelEncoder OneHotEncoder\n",
     "label_X = LabelEncoder()\n",
     "X[:,0] = label_X.fit_transform(X[:,0]) # factorize\n",
@@ -1791,11 +1720,6 @@
     "from matplotlib import style\n",
     "style.use('ggplot')\n",
     "\n",
-    "ax.set(xticks = np.arange(0,10,1),\n",
-    "       xticklabels = np.arange(1,11,1),\n",
-    "       title = ''\n",
-    "      ...)\n",
-    "\n",
     "#the curve\n",
     "ax.plot(x,y, color=\"purple\", lw=1, ls='-', /\n",
     "        marker='s', markersize=8, markerfacecolor=\"yellow\", /\n",
@@ -1895,7 +1819,6 @@
    "outputs": [],
    "source": [
     "#Seaborn visualisation\n",
-    "##need to put the features in one col to display them as group. use melt()\n",
     "import matplotlib.pyplot as plt\n",
     "import seaborn as sns #extension of matplotlib\n",
     " #univariate plots\n",
@@ -2030,7 +1953,7 @@
     "X_train = sc_x.fit_transform(X_train) # az elso lepesben fit-elni kell, ha ujra hasznaljuk mar nem kell\n",
     "X_test = sc_x.transform(X_test)\n",
     "\n",
-    "from sklearn.preprocessing import MinMaxScaler # sensitive for outliers\n",
+    "from sklearn.preprocessing import MinMaxScaler\n",
     "mscaler = MinMaxScaler()\n",
     "Xm_train = mscaler.fit_transform(Xtrain)\n",
     "Xm_test = mscaler.transform(Xtest)\n",
@@ -2040,34 +1963,8 @@
     "Xn_train = norm.fit_transform(Xtrain)\n",
     "Xn_test = norm.transform(Xtest)\n",
     "\n",
-    "from sklearn.preprocessing import RobustScaler # use q25-q75 minmax\n",
-    "...\n",
-    "\n",
     "# real value retrival after prediction\n",
     "y_pred = sc_y.inverse_trainsform(ypred)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "<span id='endoce'>Feature encoding</span><a href='#upp' style='margin-left:20px;'>up</a>"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "#adat transformacio szoveg kategoria ertekke\n",
-    "df = pd.get_dummies(df, columns=['','']) \n",
-    "df = pd.factorize(df['oszlop'])[0]\n",
-    "from sklearn.preprocessing import LabelEncoder OneHotEncoder\n",
-    "label_X = LabelEncoder()\n",
-    "X[:,0] = label_X.fit_transform(X[:,0]) # factorize\n",
-    "one = OneHotEncoder(categorical_features = [0]) # list of columns to change; dummies\n",
-    "X = one.fit_transform(X).toarray()"
    ]
   },
   {
@@ -2554,9 +2451,7 @@
     "    FROM sqlite_master\n",
     "    WHERE type IN (\"table\",\"view\");\n",
     "    '''\n",
-    "    return run_query(q)\n",
-    "\n",
-    "chunksiize = x # creates generator object. use next(obj) or for loop with enumarate"
+    "    return run_query(q)"
    ]
   },
   {
@@ -2644,7 +2539,7 @@
     "# useful financial methods\n",
     "df.idxmin() / idxmax() # returns index for the min/max value for each cols\n",
     "df.resample('D').sum() \n",
-    "df['bank'].xs['D1':'D2'].rolling(window=30, min_period=0).mean().plot() # 30 day rolling/ moving avr. in plot\n",
+    "df['bank'].xs['D1':'D2'].rolling(window=30, min_period=0).mean().plot() # 30 day rolling avr. in plot\n",
     "df.pct_change() # percent change compared to previous row 50x gyorsabb mint a while loop\n",
     "df.apply(lambda x: x.rolling(window=7, min_period=0).mean(), axis =1)\n",
     "# compares the closing prices together to which currencies goes together.  \n",
@@ -2692,7 +2587,10 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
+<<<<<<< HEAD
    "version": "3.8.3"
+
+>>>>>>> 6641b47fb48c3b09c059a9724132df635328fdfb
   }
  },
  "nbformat": 4,
